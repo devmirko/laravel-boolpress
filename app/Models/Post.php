@@ -35,4 +35,10 @@ class Post extends Model
     {
         return 'slug';
     }
+
+    //  nascondiamo questi dati per evitare che vadano a finire nel front-end
+
+    protected $hidden = [
+        'id', 'created_at', 'updated_at', 'user_id', 'category_id'
+    ];
 }

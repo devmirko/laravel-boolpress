@@ -24,8 +24,10 @@ class User extends Authenticatable
      *
      * @var array
      */
+
+    //  nascondiamo questi dati per evitare che vadano a finire nel front-end
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'id', 'email', 'email_verified_at', 'created_at', 'updated_at'
     ];
 
     /**

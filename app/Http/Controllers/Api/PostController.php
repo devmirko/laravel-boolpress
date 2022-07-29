@@ -8,16 +8,17 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
-        $per_page = $request->query('per_page', 10);
+        // se inviato una richiesta con dei dati non accettati
+        // dichiaro una variabile con il nuemro di post per pagine di default
+        $per_page_default = 10;
+        // variabile con la richiesta query e la funzione (non supriore alla variabile $per_page_default)
+        $per_page = $request->query('per_page', $per_page_default);
+        // se per_page e tra questi parametri
         if ($per_page < 1 || $per_page > 100) {
-            return response()->json(['success' => false], 400);
+            $per_page = $per_page_default;
         }
 
         $posts = Post::with('user')->with('category')->with('tags')->paginate($per_page);
@@ -28,70 +29,34 @@ class PostController extends Controller
         ]);
 
     }
+    // funzione che controlla la route della pagina home con la comparsa di post random
+    // public function random() {
+    //     $sql = Post::with(['user', 'category', 'tags'])->limit(9)->inRandomOrder();
+    //     $posts = $sql->get();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    //     return response()->json([
+    //         // 'sql'       => $sql->toSql(), // solo per debugging
+    //         'success'   => true,
+    //         'result'    => $posts,
+    //     ]);
+    // }
+
+
+    public function show($slug)
     {
-        //
+        $post = Post::with(['user', 'category', 'tags'])->where('slug', $slug)->first();
+
+        if ($post) {
+            return response()->json([
+                'success'   => true,
+                'result'    => $post
+            ]);
+        } else {
+            return response()->json([
+                'success'   => false,
+            ]);
+        }
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Post $post)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Post $post)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Post $post)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Post $post)
-    {
-        //
-    }
 }
