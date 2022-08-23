@@ -2,7 +2,7 @@
 
 @section('mainContent')
     <h1>Create new post</h1>
-    <form action="{{ route('admin.posts.store') }}" method="post" novalidate>
+    <form action="{{ route('admin.posts.store') }}" method="post"  novalidate enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
