@@ -63,15 +63,15 @@ class PostController extends Controller
             'excerpt'   => 'nullable|string|max:200',
         ]);
 
-        $form_data = $request->all();
+        $data = $request->all();
 
         // salvare l'immagine in public
-        $img_path = Storage::put('uploads',$form_data['image']);
+        $img_path = Storage::put('uploads', $data['image']);
 
         // aggiornare il valore della chiave image con il valore della immagine salvata
-        $form_data['image'] = $img_path;
+        $data['image'] = $img_path;
 
-        $data = $request->all() + [
+        $data = $data + [
             'user_id' => Auth::id(),
         ];
         dump($data);
