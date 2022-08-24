@@ -5245,20 +5245,44 @@ __webpack_require__.r(__webpack_exports__);
       name: '',
       email: '',
       message: '',
-      mailinglist: true
+      mailinglist: true,
+      successMessage: '',
+      errorMessage: '',
+      sending: false,
+      inputsErrorMessages: {}
     };
   },
   methods: {
     submitMessage: function submitMessage() {
-      console.log('funziona');
+      var _this = this;
+
+      this.sending = true;
       axios.post('/api/leads', {
         name: this.name,
         email: this.email,
         message: this.message,
         mailinglist: this.mailinglist
       }).then(function (res) {
-        return console.log(res.data);
+        console.log(res.data);
+
+        if (res.data.success) {
+          _this.resetForm();
+
+          _this.successMessage = res.data.response;
+        } else {
+          _this.inputsErrorMessages = res.data.response;
+        }
+      })["catch"](function (error) {
+        return _this.errorMessage = 'C\'è stato un errore imprevisto. Riprovare';
+      })["finally"](function (data) {
+        return _this.sending = false;
       });
+    },
+    resetForm: function resetForm() {
+      this.name = '';
+      this.email = '';
+      this.message = '';
+      this.mailinglist = true;
     }
   }
 });
@@ -5605,13 +5629,26 @@ var render = function render() {
       _c = _vm._self._c;
 
   return _c("div", [_c("h1", [_vm._v("Contact us")]), _vm._v(" "), _c("form", {
+    attrs: {
+      novalidate: ""
+    },
     on: {
       submit: function submit($event) {
         $event.preventDefault();
         return _vm.submitMessage.apply(null, arguments);
       }
     }
-  }, [_c("div", {
+  }, [_vm.successMessage ? _c("div", {
+    staticClass: "alert alert-success",
+    attrs: {
+      role: "alert"
+    }
+  }, [_vm._v("\n          " + _vm._s(_vm.successMessage) + "\n      ")]) : _vm._e(), _vm._v(" "), _vm.errorMessage ? _c("div", {
+    staticClass: "alert alert-danger",
+    attrs: {
+      role: "alert"
+    }
+  }, [_vm._v("\n          " + _vm._s(_vm.errorMessage) + "\n      ")]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "mb-3"
   }, [_c("label", {
     staticClass: "form-label",
@@ -5626,6 +5663,9 @@ var render = function render() {
       expression: "name"
     }],
     staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.inputsErrorMessages.name
+    },
     attrs: {
       type: "text",
       name: "name",
@@ -5640,7 +5680,13 @@ var render = function render() {
         _vm.name = $event.target.value;
       }
     }
-  })]), _vm._v(" "), _c("div", {
+  }), _vm._v(" "), _c("div", {
+    staticClass: "invalid-feedback"
+  }, [_c("ul", _vm._l(_vm.inputsErrorMessages.name, function (error) {
+    return _c("li", {
+      key: error
+    }, [_vm._v("\n                      " + _vm._s(error) + "\n                  ")]);
+  }), 0)])]), _vm._v(" "), _c("div", {
     staticClass: "mb-3"
   }, [_c("label", {
     staticClass: "form-label",
@@ -5655,6 +5701,9 @@ var render = function render() {
       expression: "email"
     }],
     staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.inputsErrorMessages.email
+    },
     attrs: {
       type: "email",
       name: "email",
@@ -5669,7 +5718,13 @@ var render = function render() {
         _vm.email = $event.target.value;
       }
     }
-  })]), _vm._v(" "), _c("div", {
+  }), _vm._v(" "), _c("div", {
+    staticClass: "invalid-feedback"
+  }, [_c("ul", _vm._l(_vm.inputsErrorMessages.email, function (error) {
+    return _c("li", {
+      key: error
+    }, [_vm._v("\n                      " + _vm._s(error) + "\n                  ")]);
+  }), 0)])]), _vm._v(" "), _c("div", {
     staticClass: "mb-3"
   }, [_c("label", {
     staticClass: "form-label",
@@ -5684,6 +5739,9 @@ var render = function render() {
       expression: "message"
     }],
     staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.inputsErrorMessages.message
+    },
     attrs: {
       name: "message",
       id: "message",
@@ -5699,7 +5757,13 @@ var render = function render() {
         _vm.message = $event.target.value;
       }
     }
-  })]), _vm._v(" "), _c("div", [_c("input", {
+  }), _vm._v(" "), _c("div", {
+    staticClass: "invalid-feedback"
+  }, [_c("ul", _vm._l(_vm.inputsErrorMessages.message, function (error) {
+    return _c("li", {
+      key: error
+    }, [_vm._v("\n                      " + _vm._s(error) + "\n                  ")]);
+  }), 0)])]), _vm._v(" "), _c("div", [_c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -5707,6 +5771,9 @@ var render = function render() {
       expression: "mailinglist"
     }],
     staticClass: "form-check-input",
+    "class": {
+      "is-invalid": _vm.inputsErrorMessages.newsletter
+    },
     attrs: {
       type: "checkbox",
       name: "newsletter",
@@ -5740,12 +5807,19 @@ var render = function render() {
     attrs: {
       "for": "newsletter"
     }
-  }, [_vm._v("Iscrivimi alla newsletter")])]), _vm._v(" "), _c("button", {
+  }, [_vm._v("Iscrivimi alla newsletter")]), _vm._v(" "), _c("div", {
+    staticClass: "invalid-feedback"
+  }, [_c("ul", _vm._l(_vm.inputsErrorMessages.newsletter, function (error) {
+    return _c("li", {
+      key: error
+    }, [_vm._v("\n                      " + _vm._s(error) + "\n                  ")]);
+  }), 0)])]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary",
     attrs: {
-      type: "submit"
+      type: "submit",
+      disabled: _vm.sending
     }
-  }, [_vm._v("Send")])])]);
+  }, [_vm._v(" " + _vm._s(_vm.sending ? "Sending..." : "Send") + " ")])])]);
 };
 
 var staticRenderFns = [];

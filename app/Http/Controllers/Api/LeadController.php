@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
+use App\Mail\LeadToLead;
+use App\Mail\LeadToAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 
 class LeadController extends Controller
 {
@@ -55,10 +58,27 @@ class LeadController extends Controller
             ]);
         }
 
+        try {
+
         //salvare nel db
         $lead = Lead::create($form_data);
 
         // inviare la mail alla mail inserita nel db
+        Mail::to($lead->email)->send(new LeadToLead($lead));
+
+         // inviare mail all'admin del sito
+        Mail::to('admin@bool.press')->send(new LeadToAdmin($lead));
+       } catch (\Exception $e) {
+        return response()->json([
+            'success'   => false,
+            'response'  => 'C\'è stato un errore, riprova',
+        ], 500);
+       }
+
+       return response()->json([
+        'success'   => true,
+        'response'  => 'Messaggio inviato, verrai contattato al più presto',
+       ]);
     }
 
     /**
